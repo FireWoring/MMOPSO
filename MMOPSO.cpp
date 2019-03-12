@@ -1,5 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
-#include "MMOPDO.h"
+#include "MMOPSO.h"
 
 int MMOPSO::Cmin = 1;
 int MMOPSO::Cmax = 15;
@@ -80,7 +80,7 @@ void MMOPSO::InitPopulation()
 		cout << "F:" << pop[i]->f->F(pop[i]->answer) << " Tnom:" << pop[i]->f->TNom(pop[i]->answer) << endl;
 	}
 
-	//³õÊ¼»¯pBestÊı×é
+	//åˆå§‹åŒ–pBestæ•°ç»„
 	pbest.assign(NNUM, 0);
 }
 
@@ -104,7 +104,7 @@ double MMOPSO::GetG(Particle *p,vector<double>& weight)
 
 int MMOPSO::CheckDominance(Particle*& x, Particle*& y)
 {
-	//xÖ§Åäy·µ»Øtrue£¬·ñÔò·µ»Øfalse
+	//xæ”¯é…yè¿”å›trueï¼Œå¦åˆ™è¿”å›false
 	if (x->f->F(x->answer) <= y->f->F(y->answer) && x->f->TNom(x->answer) < y->f->TNom(y->answer))
 		return 1;
 	else if (x->f->F(x->answer) < y->f->F(y->answer) && x->f->TNom(x->answer) <= y->f->TNom(y->answer))
@@ -144,7 +144,7 @@ void MMOPSO::UpdateArchive(vector<Particle *>& popSet)
 		}
 		if (rep.size() == 0 || state != -1)
 		{
-			//¼ì²â¸ÃÁ£×ÓÊÇ·ñÒÑ¾­ÔÚrepµ±ÖĞ
+			//æ£€æµ‹è¯¥ç²’å­æ˜¯å¦å·²ç»åœ¨repå½“ä¸­
 			int has = false;
 			for (int k = 0; k < rep.size(); k++)
 			{
@@ -153,7 +153,7 @@ void MMOPSO::UpdateArchive(vector<Particle *>& popSet)
 				if (has == true)
 					break;
 			}
-			//Èç¹û²»ÔÚrepµ±ÖĞ£¬¾Í¼ÓÈë½øÈ¥
+			//å¦‚æœä¸åœ¨repå½“ä¸­ï¼Œå°±åŠ å…¥è¿›å»
 			if (has == false)
 			{
 				Particle* newOne = new Particle(popSet[i]->getCorrdinate().c, popSet[i]->getCorrdinate().u, popSet[i]->getCorrdinate().alphaH, popSet[i]->getCorrdinate().alphaC, popSet[i]->getCorrdinate().betaH, popSet[i]->getCorrdinate().betaC);
@@ -187,7 +187,7 @@ void MMOPSO::CrowdingDistanceAssignment()
 		sortObject.push_back(SortObject(i, rep[i]));
 	}
 
-	//ÇóµÚÒ»¸öº¯ÊıµÄ¾àÀë¶ÈÁ¿
+	//æ±‚ç¬¬ä¸€ä¸ªå‡½æ•°çš„è·ç¦»åº¦é‡
 	sort(sortObject.begin(), sortObject.end(),
 		[&](SortObject& x, SortObject& y)
 		{
@@ -199,7 +199,7 @@ void MMOPSO::CrowdingDistanceAssignment()
 		distance[sortObject[i].id] = (sortObject[i + 1].p->f->F(sortObject[i + 1].p->answer) - sortObject[i - 1].p->f->F(sortObject[i - 1].p->answer))/max_distance;
 	}
 
-	//ÇóµÚ¶ş¸öº¯ÊıµÄ¾àÀë¶ÈÁ¿
+	//æ±‚ç¬¬äºŒä¸ªå‡½æ•°çš„è·ç¦»åº¦é‡
 	sort(sortObject.begin(), sortObject.end(),
 		[&](SortObject& x, SortObject& y)
 	{
@@ -213,7 +213,7 @@ void MMOPSO::CrowdingDistanceAssignment()
 		distance[sortObject[i].id] += ((sortObject[i + 1].p->f->F(sortObject[i + 1].p->answer) - sortObject[i - 1].p->f->F(sortObject[i - 1].p->answer))/max_distance);
 	}
 
-	//ÉèÖÃ×ÜµÄ¾àÀë¶ÈÁ¿
+	//è®¾ç½®æ€»çš„è·ç¦»åº¦é‡
 	distanceAll.clear();
 	distanceAll.assign(distance.begin(), distance.end());
 }
@@ -355,10 +355,10 @@ void MMOPSO::EvolutionarySearchStrategy()
 
 void MMOPSO::GetHalfRef()
 {
-	//»ñÈ¡Óµ¼·¾àÀëÖµ
+	//è·å–æ‹¥æŒ¤è·ç¦»å€¼
 	CrowdingDistanceAssignment();
 
-	//¹¹ÔìÓµ¼·¾àÀëÖµºÍidÖ®¼äÏà»¥¶ÔÓ¦µÄvector
+	//æ„é€ æ‹¥æŒ¤è·ç¦»å€¼å’Œidä¹‹é—´ç›¸äº’å¯¹åº”çš„vector
 	vector<SortDistance> distance_vec;
 	int id = 0;
 	for_each(distanceAll.begin(),distanceAll.end(),
@@ -368,13 +368,13 @@ void MMOPSO::GetHalfRef()
 			++id;
 		});
 
-	//¸ù¾İÓµ¼·¾àÀëÖµÅÅĞò
+	//æ ¹æ®æ‹¥æŒ¤è·ç¦»å€¼æ’åº
 	sort(distance_vec.begin(), distance_vec.end(),
 		[&](SortDistance& x, SortDistance& y){
 			return x.distance < y.distance;
 		});
 
-	//¹¹ÔìEÊı×é
+	//æ„é€ Eæ•°ç»„
 	for (int i = 0; i < rep.size() / 2 &&distance_vec.size()>0; i++)
 	{
 		E.push_back(rep[distance_vec[i].id]);
@@ -397,7 +397,7 @@ void MMOPSO::SBX(Particle *x, Particle *y)
 		}
 	}	
 
-	//¼ÆËã½»²æºóµÄĞÂ¸öÌå
+	//è®¡ç®—äº¤å‰åçš„æ–°ä¸ªä½“
 	int newC1 = static_cast<int>(0.5*((1 + betaRetio[0])*x->getCorrdinate().c + (1 - betaRetio[0])*y->getCorrdinate().c));
 	int newC2 = static_cast<int>(0.5*((1 - betaRetio[0])*x->getCorrdinate().c + (1 + betaRetio[0])*y->getCorrdinate().c));
 	double newU1 = 0.5*((1 + betaRetio[1])*x->getCorrdinate().u + (1 - betaRetio[1])*y->getCorrdinate().u);
@@ -452,16 +452,16 @@ void MMOPSO::SetC()
 void MMOPSO::CompleteMMOPSO()
 {
 	cout << "step 1:" << endl;
-	//³õÊ¼»¯È¨ÖØÏòÁ¿
+	//åˆå§‹åŒ–æƒé‡å‘é‡
 	InitWeightVector();
 
-	//³õÊ¼»¯ÖÖÈº
+	//åˆå§‹åŒ–ç§ç¾¤
 	InitPopulation();
 
-	//³õÊ¼»¯zÖµ£¬¼´²Î¿¼µã
+	//åˆå§‹åŒ–zå€¼ï¼Œå³å‚è€ƒç‚¹
 	InitZ();
 
-	//³õÊ¼»¯Íâ²¿µµ°¸
+	//åˆå§‹åŒ–å¤–éƒ¨æ¡£æ¡ˆ
 	UpdateArchive(pop);
 
 	int ev = 0;
@@ -469,39 +469,39 @@ void MMOPSO::CompleteMMOPSO()
 	{
 		cout << "step 2:" << endl;
 		cout << "ev:" << ev << endl;
-		//Ñ¡Ôñxpbest
+		//é€‰æ‹©xpbest
 		SelectPbest();
 
 		for (int i = 0; i < MUTATIONNUM; i++)
 		{
 			cout << "step 3:" << endl;
-			//¸üĞÂËÙ¶È
+			//æ›´æ–°é€Ÿåº¦
 			UpdateVelocity();
 
-			//¸üĞÂÎ»ÖÃ
+			//æ›´æ–°ä½ç½®
 			UpdatePosition();
 			
-			//¸üĞÂ²Î¿¼µã
+			//æ›´æ–°å‚è€ƒç‚¹
 			UpdateReferencePoint();
 		}
 
 		/*for (int i = 0; i < pop.size(); i++)
 		cout << "F:" << pop[i]->f->F(pop[i]->answer) << " Tnom:" << pop[i]->f->TNom(pop[i]->answer) << endl;*/
 
-		//¸üĞÂÍâ²¿´æµµ
+		//æ›´æ–°å¤–éƒ¨å­˜æ¡£
 		UpdateArchive(pop);
 
-		//ÊµĞĞ½ø»¯²ßÂÔ
+		//å®è¡Œè¿›åŒ–ç­–ç•¥
 		EvolutionarySearchStrategy();
 
-		//¸üĞÂ²Î¿¼µã
+		//æ›´æ–°å‚è€ƒç‚¹
 		UpdateReferencePoint();
 
 		cout << "end" << endl;
-		//¸üĞÂÍâ²¿´æµµ
+		//æ›´æ–°å¤–éƒ¨å­˜æ¡£
 		UpdateArchive(S);
 
-		//½«µÃµ½µÄÁ£×ÓĞ´ÈëÎÄ¼ş
+		//å°†å¾—åˆ°çš„ç²’å­å†™å…¥æ–‡ä»¶
 		char str[10] = { 0 };
 		_itoa(ev, str, 10);
 		char filename[20] = "./repx_";
